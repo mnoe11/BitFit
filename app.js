@@ -8,6 +8,8 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+var PORT = 8080;
+
 var app = express();
 
 // view engine setup
@@ -56,5 +58,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
+app.listen(PORT);
+console.log('Running on http://localhost:' + PORT);
 
 module.exports = app;
