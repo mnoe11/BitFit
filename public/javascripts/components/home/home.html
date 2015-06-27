@@ -1,14 +1,34 @@
 
-<div class="col-md-8 col-md-offset-2 text-center container">
-  <div class="jumbotron">
-    <div ng-show="isLoggedIn()">
-      <h1>BitFit</h1>
+<div class="col-md-10 col-md-offset-1 container">
+  <div class="page-header bitfit-header text-center">
+    <h1>BitFit - Recent Commits</h1>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <b>Username:</b> {{ user.username }}
+      <b style="padding-left: 5em;">GitHub Handle:</b> {{ user.githubHandle }}
     </div>
 
-  </div>
-
-  <div style="color: white">
-    Successfully Logged in. Now to add GitHub commit feed.
+    <div class="panel-body">
+      <table class="table table-striped table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Repo</th>
+            <th>Date</th>
+            <th>Message</th>
+            <th>URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="commit in commits">
+            <td><a href="{{commit.repo.url}}">{{commit.repo.name }}</a></td>
+            <td>{{ commit.created_at | date }}</td>
+            <td>{{ commit.payload.commits[0].message }}</td>
+            <td><a href="{{ commit.payload.commits[0].url}}"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </div>

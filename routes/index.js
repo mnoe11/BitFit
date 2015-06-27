@@ -67,12 +67,12 @@ router.post('/login', function(req, res, next){
 });
 
 router.get('/user', auth, function(req, res, next) {
-  if (!req.body.username) {
+  if (!req.payload.username) {
     return res.status(400).json({ message: 'Must supply username' });
   }
 
   // Checks to see if a User already has that username
-  User.findOne({ username: req.body.username }, function (err, user) {
+  User.findOne({ username: req.payload.username }, function (err, user) {
     if (err) { return done(err); }
 
     if (!user) {

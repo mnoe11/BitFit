@@ -2,27 +2,33 @@ var app = angular.module('bitFitAngularApp');
 
 app.factory('authService', [
   '$http',
+  '$rootScope',
   '$window',
+  '$q',
   'TOKEN',
-  function($http, $window, TOKEN){
+  function($http, $rootScope, $window, $q, TOKEN){
     var auth = {};
-    var savedUser = {};
+    var currentUser;
 
-    // Returns the the current user
-    auth.currentUser = function(){
-      if(auth.isLoggedIn()){
-        if (savedUser) {
-          return savedUser;
-        }
-        else {
-          var token = auth.getToken();
-          var payload = JSON.parse($window.atob(token.split('.')[1]));
-          $http.get('/user', username).sucess(function(data) {
+    auth.currentUser = function() {
+      return currentUser;
+    };
+    // Will reload the $user
+    auth.reloadCurrentUser = function(){
+
+      var token = auth.getToken();
+      var payload = JSON.parse($window.atob(token.split('.')[1]));
+      $http.get('/user', {
+                  headers: {
+                    'Authorization': 'Bearer ' + auth.getToken()
+                  },
+                  params: {
+                    username: payload.username
+                  }
+                })
+          .success(function(data) {
             auth.saveUser(data.user);
-            return savedUser;
           })
-        }
-      }
     };
 
     // Retrieves login token from local storage
@@ -73,7 +79,7 @@ app.factory('authService', [
 
     // Saves the user
     auth.saveUser = function (user) {
-      savedUser = user;
+      currentUser = user;
     }
 
     return auth;

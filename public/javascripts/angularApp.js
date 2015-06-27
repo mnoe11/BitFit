@@ -37,5 +37,13 @@ app.controller('mainCtrl', [
     else {
       $location.path('login');
     }
+
+    $scope.$watch(function() { return authService.currentUser(); },
+      function(newValue, oldValue) {
+        if (newValue == null && authService.isLoggedIn()) {
+          authService.reloadCurrentUser();
+        }
+      }
+    )
   }
 ])
