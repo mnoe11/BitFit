@@ -30,13 +30,12 @@ app.controller('mainCtrl', [
   '$location',
   'authService',
   function($scope, $state, $location, authService) {
-    authService.logOut();
+
     if (authService.isLoggedIn()) {
       $state.go('home');
     }
     else {
       $location.path('login');
-      //$state.transitionTo('login');
     }
   }
 ])
