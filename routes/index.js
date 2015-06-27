@@ -29,14 +29,14 @@ router.post('/register', function(req, res, next){
       var user = new User();
 
       user.username = req.body.username;
-      user.githubHandle = req.githubHandle;
+      user.githubHandle = req.body.githubHandle;
 
       user.setPassword(req.body.password)
 
       user.save(function (err){
         if(err){ return next(err); }
 
-        return res.json({token: user.generateJWT()})
+        return res.json({ token: user.generateJWT(), user: user })
       });
 
     }
@@ -59,11 +59,31 @@ router.post('/login', function(req, res, next){
     if(err){ return next(err); }
 
     if(user){
-      return res.json({token: user.generateJWT()});
+      return res.json({ token: user.generateJWT(), user: user });
     } else {
       return res.status(401).json(info);
     }
   })(req, res, next);
 });
+
+router.get('/user', auth, function(req, res, next) {
+  if (!req.body.username) {
+    return res.status(400).json({ message: 'Must supply username' });
+  }
+
+  // Checks to see if a User already has that username
+  User.findOne({ username: req.body.username }, function (err, user) {
+    if (err) { return done(err); }
+
+    if (!user) {
+        return res.status(400).json({ message: 'User with that username does not exist' });
+    }
+    else {
+      return res.json({ user: user });
+    }
+
+  });
+
+})
 
 module.exports = router;

@@ -6,14 +6,22 @@ app.factory('authService', [
   'TOKEN',
   function($http, $window, TOKEN){
     var auth = {};
+    var savedUser = {};
 
-    // Returns the username of the current user
+    // Returns the the current user
     auth.currentUser = function(){
       if(auth.isLoggedIn()){
-        var token = auth.getToken();
-        var payload = JSON.parse($window.atob(token.split('.')[1]));
-
-        return payload.username;
+        if (savedUser) {
+          return savedUser;
+        }
+        else {
+          var token = auth.getToken();
+          var payload = JSON.parse($window.atob(token.split('.')[1]));
+          $http.get('/user', username).sucess(function(data) {
+            auth.saveUser(data.user);
+            return savedUser;
+          })
+        }
       }
     };
 
@@ -39,6 +47,7 @@ app.factory('authService', [
     auth.logIn = function(user){
       return $http.post('/login', user).success(function(data){
         auth.saveToken(data.token);
+        auth.saveUser(data.user);
       });
     };
 
@@ -53,6 +62,7 @@ app.factory('authService', [
     auth.register = function(user){
       return $http.post('/register', user).success(function(data){
         auth.saveToken(data.token);
+        auth.saveUser(data.user);
       });
     };
 
@@ -60,6 +70,11 @@ app.factory('authService', [
     auth.saveToken = function (token){
       $window.localStorage[TOKEN] = token;
     };
+
+    // Saves the user
+    auth.saveUser = function (user) {
+      savedUser = user;
+    }
 
     return auth;
   }]);
