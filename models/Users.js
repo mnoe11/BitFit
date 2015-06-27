@@ -2,9 +2,17 @@ var mongoose = require('mongoose');
 var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
 
+var validBitcoinAddress = function(bitcoinAddress) {
+  return bitcoinAddress.length >= 26 && bitcoinAddress.length <= 35 ;
+}
+
 var UserSchema = new mongoose.Schema({
-  username: {type: String, lowercase: true, unique: true},
+  username: { type: String, lowercase: true, unique: true },
   githubHandle: String,
+  monthlyCommitGoal: { type: Number, min: 0, default: 15 },
+  myBitcoinAddress: { type: String, default: "", validate: [validBitcoinAddress, 'Invalid Bitcoin Address.'] },
+  destinationBitcoinAddress: { type: String, default: "", validate: [validBitcoinAddress, 'Invalid Bitcoin Address.'] },
+  satoshiPenaltyAmount: { type: Number, min: 0, default: 0 },
   hash: String,
   salt: String
 });

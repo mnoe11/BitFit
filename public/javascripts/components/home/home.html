@@ -1,16 +1,25 @@
 
 <div class="col-md-10 col-md-offset-1 container">
   <div class="page-header bitfit-header text-center">
-    <h1>BitFit - Recent Commits</h1>
+    <h1>BitFit -
+      <span ng-show="displayGithubFeed"> Recent Commits</span>
+      <span ng-show="!displayGithubFeed"> User Settings</span>
+    </h1>
   </div>
   <div class="panel panel-default">
     <div class="panel-heading">
+      <button class="btn btn-sm btn-primary" ng-click="toggleView()">
+        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+      </button>
       <b>Username:</b> {{ user.username }}
       <b style="padding-left: 5em;">GitHub Handle:</b> {{ user.githubHandle }}
+      <b style="padding-left: 5em;">Monthly Commits:</b> {{ numberMonthlyCommits }}
+      <b style="padding-left: 5em;">Monthly Commit Goal:</b> {{ user.monthlyCommitGoal }}
     </div>
 
     <div class="panel-body">
-      <table class="table table-striped table-bordered table-hover">
+
+      <table ng-show="displayGithubFeed" class="table table-striped table-bordered table-hover">
         <thead>
           <tr>
             <th>Repo</th>
@@ -28,6 +37,88 @@
           </tr>
         </tbody>
       </table>
+
+      <div class="col-md-8 col-md-offset-2 text-center" ng-hide="displayGithubFeed">
+        <form ng-submit="saveChanges()"
+              style="margin-top:30px;"
+              name="userSettingsForm">
+
+            <!-- Username -->
+            <div class="form-group col-md-4 col-md-offset-4">
+              <h5>Username:</h5>
+              <input type="text"
+                     class="form-control"
+                     placeholder="Username"
+                     ng-model="user.username"
+                     required>
+            </div>
+
+            <!-- Monthly Commit Goal -->
+            <div class="form-group col-md-4 col-md-offset-4">
+              <h5>Monthly Commit Goal:</h5>
+              <input type="number"
+                     class="form-control"
+                     placeholder="Monthly Commit Goal"
+                     ng-model="user.monthlyCommitGoal"
+                     name="monthlyCommitGoal"
+                     required>
+              <span ng-show="userSettingsForm.monthlyCommitGoal.$invalid && userSettingsForm.monthlyCommitGoal.$dirty"
+                    class="invalid-form-message">Invalid Monthly Commit Goal</span>
+            </div>
+
+            <!-- Penalty Amount -->
+            <div class="form-group col-md-6 col-md-offset-3">
+              <h5>Penalty Amount (satoshis):</h5>
+              <input type="number"
+                     class="form-control"
+                     placeholder="Penalty Amount (satoshis)"
+                     ng-model="user.satoshiPenaltyAmount"
+                     name="satoshiPenaltyAmount"
+                     required>
+              <span ng-show="userSettingsForm.satoshiPenaltyAmount.$invalid && userSettingsForm.satoshiPenaltyAmount.$dirty"
+                    class="invalid-form-message">Invalid Penalty Amount</span>
+            </div>
+
+            <!-- My Bitcoin Address -->
+            <div class="form-group col-md-6 col-md-offset-3">
+              <h5>My Bitcoin Address:</h5>
+              <input type="text"
+                     class="form-control"
+                     placeholder="My Bitcoin Address"
+                     ng-model="user.myBitcoinAddress"
+                     ng-pattern="/^[A-Za-z0-9]{26,35}$/"
+                     name="myBitcoinAddress"
+                     required>
+              <span ng-show="userSettingsForm.myBitcoinAddress.$invalid && userSettingsForm.myBitcoinAddress.$dirty"
+                    class="invalid-form-message">Invalid Bitcoin Address</span>
+            </div>
+
+            <!-- Destination Bitcoin Address -->
+            <div class="form-group col-md-6 col-md-offset-3">
+              <h5>Destination Bitcoin Address:</h5>
+              <input type="text"
+                     class="form-control"
+                     placeholder="Destination Bitcoin Address"
+                     ng-model="user.destinationBitcoinAddress"
+                     ng-pattern="/^[A-Za-z0-9]{26,35}$/"
+                     name="destinationBitcoinAddress"
+                     required>
+              <span ng-show="userSettingsForm.destinationBitcoinAddress.$invalid && userSettingsForm.destinationBitcoinAddress.$dirty"
+                    class="invalid-form-message">Invalid Bitcoin Address</span>
+            </div>
+
+            <div class="col-md-12 text-center">
+              <button type="submit"
+                      ng-disabled="userSettingsForm.$invalid"
+                      class="btn btn-primary">Save Changes</button>
+              <button type="button"
+                      class="btn btn-primary"
+                      ng-click="logout()">Logout</button>
+            </div>
+        </form>
+
+      </div>
+
     </div>
   </div>
 

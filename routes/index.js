@@ -17,7 +17,11 @@ router.get('/', function(req, res, next) {
 router.post('/register', function(req, res, next){
   if(!req.body.username ||
      !req.body.password ||
-     !req.body.githubHandle) {
+     !req.body.githubHandle ||
+     !req.body.monthlyCommitGoal ||
+     !req.body.myBitcoinAddress ||
+     !req.body.destinationBitcoinAddress ||
+     !req.body.satoshiPenaltyAmount) {
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
@@ -30,6 +34,10 @@ router.post('/register', function(req, res, next){
 
       user.username = req.body.username;
       user.githubHandle = req.body.githubHandle;
+      user.monthlyCommitGoal = req.body.monthlyCommitGaol;
+      user.myBitcoinAddress = req.body.myBitcoinAddress;
+      user.destinationBitcoinAddress = req.body.destinationBitcoinAddress;
+      user.satoshiPenaltyAmount = req.body.satoshiPenaltyAmount;
 
       user.setPassword(req.body.password)
 
@@ -84,6 +92,36 @@ router.get('/user', auth, function(req, res, next) {
 
   });
 
-})
+  })
+  .post('/user', auth, function(req, res, next) {
+    var userParam = req.body.user;
+    if (!userParam || !userParam.username || !userParam.githubHandle ||
+        !userParam.monthlyCommitGoal || !userParam.myBitcoinAddress ||
+        !userParam.satoshiPenaltyAmount) {
+      return res.status(400).json({ message: 'Invalid parameters.' });
+    }
+    else {
+      User.findOne({ username: userParam.username }, function (err, user) {
+        if (err) { return done(err); }
+
+        if (!user) {
+          return res.status(400).json({ message: 'User with that username does not exist' });
+        }
+        else {
+          user.monthlyCommitGoal = userParam.monthlyCommitGoal;
+          user.myBitcoinAddress = userParam.myBitcoinAddress;
+          user.destinationBitcoinAddress = userParam.destinationBitcoinAddress;
+          user.satoshiPenaltyAmount = userParam.satoshiPenaltyAmount;
+
+          user.save(function (err){
+            if(err){ return next(err); }
+
+            return res.json({ token: user.generateJWT(), user: user })
+          });
+        }
+      })
+    }
+  })
+
 
 module.exports = router;

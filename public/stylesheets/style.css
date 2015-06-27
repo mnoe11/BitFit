@@ -12,7 +12,11 @@ a {
 .bitfit-header {
   background-color: transparent;
   color: white;
-  text-shadow: 0 0.3em black;
+  text-shadow: 0 0.15em black;
+}
+
+.jumbotron {
+  padding-bottom: 10px;
 }
 
 .login-panel {
@@ -21,4 +25,9 @@ a {
 
 .btn-primary {
   border-color: white;
+}
+
+.invalid-form-message {
+  color: red;
+  font-size: 10px;
 }

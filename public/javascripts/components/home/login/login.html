@@ -14,6 +14,7 @@
     <span>{{ error.message }}</span>
   </div>
 
+  <!-- Login Form -->
   <form ng-submit="logIn()"
         style="margin-top:30px;"
         name="loginForm"
@@ -25,7 +26,6 @@
                placeholder="Username"
                ng-model="user.username"
                ng-required="!showSignUp">
-        </input>
       </div>
       <div class="form-group col-md-4 col-md-offset-4">
         <input type="password"
@@ -33,7 +33,6 @@
                placeholder="Password"
                ng-model="user.password"
                ng-required="!showSignUp">
-        </input>
       </div>
       <div class="col-md-12">
         <button type="submit"
@@ -44,10 +43,13 @@
       </div>
   </form>
 
+  <!-- Register Form -->
   <form ng-submit="register()"
         style="margin-top:30px;"
         name="signUpForm"
         ng-show="showSignUp">
+
+      <h4 class="bitfit-header">Fill out necessary fields.</h4>
 
       <div class="form-group col-md-4 col-md-offset-4">
         <input type="text"
@@ -56,7 +58,6 @@
                ng-model="user.username"
                name="username"
                ng-required="showSignUp">
-        </input>
       </div>
 
       <div class="form-group col-md-4 col-md-offset-4">
@@ -66,7 +67,6 @@
                ng-model="user.password"
                name="password"
                ng-required="showSignUp">
-        </input>
       </div>
 
       <div class="form-group col-md-4 col-md-offset-4">
@@ -76,7 +76,6 @@
                ng-model="confirmPassword"
                name="confirmPassword"
                ng-required="showSignUp">
-        </input>
       </div>
 
       <div class="form-group col-md-4 col-md-offset-4">
@@ -86,8 +85,58 @@
                ng-model="user.githubHandle"
                name="githubHandle"
                ng-required="showSignUp">
-        </input>
       </div>
+
+      <!-- Monthly Commit Goal -->
+      <div class="form-group col-md-4 col-md-offset-4">
+        <input type="number"
+               class="form-control"
+               placeholder="Monthly Commit Goal"
+               ng-model="user.monthlyCommitGoal"
+               name="monthlyCommitGoal"
+               ng-required="showSignUp">
+         <span ng-show="signUpForm.monthlyCommitGoal.$invalid && signUpForm.monthlyCommitGoal.$dirty"
+               class="invalid-form-message">Invalid Monthly Commit Goal</span>
+      </div>
+
+      <!-- Penalty Amount -->
+      <div class="form-group col-md-4 col-md-offset-4">
+        <input type="number"
+               class="form-control"
+               placeholder="Penalty Amount (satoshis)"
+               ng-model="user.satoshiPenaltyAmount"
+               name="satoshiPenaltyAmount"
+               ng-required="showSignUp">
+        <span ng-show="signUpForm.satoshiPenaltyAmount.$invalid && signUpForm.satoshiPenaltyAmount.$dirty"
+              class="invalid-form-message">Invalid Penalty Amount</span>
+      </div>
+
+      <!-- My Bitcoin Address -->
+      <div class="form-group col-md-6 col-md-offset-3">
+        <input type="text"
+               class="form-control"
+               placeholder="My Bitcoin Address"
+               ng-model="user.myBitcoinAddress"
+               ng-pattern="/^[A-Za-z0-9]{26,35}$/"
+               name="myBitcoinAddress"
+               ng-required="showSignUp">
+        <span ng-show="signUpForm.myBitcoinAddress.$invalid && signUpForm.myBitcoinAddress.$dirty"
+              class="invalid-form-message">Invalid Bitcoin Address</span>
+      </div>
+
+      <!-- Destination Bitcoin Address -->
+      <div class="form-group col-md-6 col-md-offset-3">
+        <input type="text"
+               class="form-control"
+               placeholder="Destination Bitcoin Address"
+               ng-model="user.destinationBitcoinAddress"
+               ng-pattern="/^[A-Za-z0-9]{26,35}$/"
+               name="destinationBitcoinAddress"
+               ng-required="showSignUp">
+        <span ng-show="signUpForm.destinationBitcoinAddress.$invalid && signUpForm.destinationBitcoinAddress.$dirty"
+              class="invalid-form-message">Invalid Bitcoin Address</span>
+      </div>
+
 
       <div class="col-md-12">
         <button type="submit"
