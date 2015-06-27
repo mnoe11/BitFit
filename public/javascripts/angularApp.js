@@ -13,6 +13,11 @@ app.config([
         templateUrl: PATHS.HOME + '/home.html',
         controller: 'homeCtrl'
       })
+      .state('login', {
+        url: '/login',
+        templateUrl: PATHS.HOME + '/login/login.html',
+        controller: 'loginCtrl'
+      })
 
       $urlRouterProvider.otherwise('home');
   }
@@ -21,6 +26,17 @@ app.config([
 
 app.controller('mainCtrl', [
   '$scope',
-  function($scope) {
+  '$state',
+  '$location',
+  'authService',
+  function($scope, $state, $location, authService) {
+    authService.logOut();
+    if (authService.isLoggedIn()) {
+      $state.go('home');
+    }
+    else {
+      $location.path('login');
+      //$state.transitionTo('login');
+    }
   }
 ])
