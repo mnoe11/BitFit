@@ -1,8 +1,24 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-image: url('http://www.pd4pic.com/images/background-bits-bit-network-blue-tech-hitech.jpg');
+  background-size: cover;
 }
 
 a {
   color: #00B7FF;
+}
+
+.jumbotron {
+  background-color: transparent;
+  color: white;
+  text-shadow: 0 0.3em black;
+}
+
+.login-panel {
+  padding-top: 20%;
+}
+
+.btn-primary {
+  border-color: white;
 }

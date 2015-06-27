@@ -4,13 +4,14 @@ var app = angular.module('bitFitAngularApp', ['ui.router']);
 app.config([
   '$stateProvider',
   '$urlRouterProvider',
-  function($stateProvider, $urlRouterProvider) {
+  'PATHS',
+  function($stateProvider, $urlRouterProvider, PATHS) {
 
     $stateProvider
       .state('home', {
         url: '/home',
-        templateUrl: '/home.html',
-        controller: 'MainCtrl'
+        templateUrl: PATHS.HOME + '/home.html',
+        controller: 'homeCtrl'
       })
 
       $urlRouterProvider.otherwise('home');
@@ -18,8 +19,8 @@ app.config([
 ]);
 
 
-app.controller('MainCtrl', [
-'$scope',
-function($scope, posts){
-
-}]);
+app.controller('mainCtrl', [
+  '$scope',
+  function($scope) {
+  }
+])

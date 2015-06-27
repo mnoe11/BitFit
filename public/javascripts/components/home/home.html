@@ -1,0 +1,20 @@
+
+<div class="col-md-8 col-md-offset-2 text-center container">
+  <div class="jumbotron">
+    <div ng-hide="isLoggedIn()">
+      <h1>Welcome to BitFit</h1>
+      <p>A FitBit for code</p>
+    </div>
+    <div ng-show="isLoggedIn()">
+      <h1>BitFit</h1>
+    </div>
+
+  </div>
+  <login-directive ng-hide="isLoggedIn()"></login-directive>
+
+  <div ng-show="isLoggedIn()"
+       style="color: white">
+    Successfully Logged in. Now to add GitHub commit feed.
+  </div>
+
+</div>
