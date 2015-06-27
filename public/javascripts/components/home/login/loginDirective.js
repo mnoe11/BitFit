@@ -15,7 +15,7 @@ app.directive('loginDirective', [
 
         $scope.confirmPassword = '';
         $scope.user = {};
-
+        
         $scope.toggleLoginSignUp = function() {
           $scope.user = {};
           $scope.showSignUp = !$scope.showSignUp;
@@ -23,7 +23,7 @@ app.directive('loginDirective', [
         }
 
         $scope.register = function(){
-          if ($scope.confirmPassword != $scope.user.Password) {
+          if ($scope.confirmPassword != $scope.user.password) {
             $scope.error = {};
             $scope.error.message = 'Passwords must match';
             return;

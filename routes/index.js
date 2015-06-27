@@ -21,20 +21,32 @@ router.post('/register', function(req, res, next){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
-  console.log('Registering user!');
+  // Checks to see if a User already has that username
+  User.findOne({ username: req.body.username }, function (err, user) {
+    if (err) { return done(err); }
 
-  var user = new User();
+    if (!user) {
+      var user = new User();
 
-  user.username = req.body.username;
-  user.githubHandle = req.githubHandle;
+      user.username = req.body.username;
+      user.githubHandle = req.githubHandle;
 
-  user.setPassword(req.body.password)
+      user.setPassword(req.body.password)
 
-  user.save(function (err){
-    if(err){ return next(err); }
+      user.save(function (err){
+        if(err){ return next(err); }
 
-    return res.json({token: user.generateJWT()})
+        return res.json({token: user.generateJWT()})
+      });
+
+    }
+    else {
+      return res.status(400).json({message: 'Username already taken.'})
+    }
+
   });
+
+
 });
 
 router.post('/login', function(req, res, next){
