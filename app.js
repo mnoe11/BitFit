@@ -12,9 +12,10 @@ require('./config/passport');
 
 
 var routes = require('./routes/index');
+var mongoConnectString = 'mongodb://' + process.env.MONGO_HOST + '/bit-fit';
 
 // Mongoose Model Config
-mongoose.connect('mongodb://localhost/bit-fit');
+mongoose.connect(mongoConnectString);
 var PORT = 8080;
 
 var app = express();
