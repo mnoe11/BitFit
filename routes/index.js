@@ -2,6 +2,7 @@ var express = require('express');
 var jwt = require('express-jwt');
 var mongoose = require('mongoose');
 var passport = require('passport');
+var unirest = require('unirest');
 
 var User = mongoose.model('User');
 
@@ -19,7 +20,6 @@ router.post('/register', function(req, res, next){
      !req.body.password ||
      !req.body.githubHandle ||
      !req.body.monthlyCommitGoal ||
-     !req.body.myBitcoinAddress ||
      !req.body.destinationBitcoinAddress ||
      !req.body.satoshiPenaltyAmount) {
     return res.status(400).json({message: 'Please fill out all fields'});
@@ -32,19 +32,29 @@ router.post('/register', function(req, res, next){
     if (!user) {
       var user = new User();
 
-      user.username = req.body.username;
-      user.githubHandle = req.body.githubHandle;
-      user.monthlyCommitGoal = req.body.monthlyCommitGaol;
-      user.myBitcoinAddress = req.body.myBitcoinAddress;
-      user.destinationBitcoinAddress = req.body.destinationBitcoinAddress;
-      user.satoshiPenaltyAmount = req.body.satoshiPenaltyAmount;
+      // Generates a Test Bitcoin Address for the new User
+      // using the helloblock api
+      unirest.get('https://testnet.helloblock.io/v1/faucet?type=1')
+      .end(function(testBitcoinResponse) {
+        var testBitcoinInfo = testBitcoinResponse.body.data;
 
-      user.setPassword(req.body.password)
+        user.username = req.body.username;
+        user.githubHandle = req.body.githubHandle;
+        user.monthlyCommitGoal = req.body.monthlyCommitGaol;
+        user.destinationBitcoinAddress = req.body.destinationBitcoinAddress;
+        user.satoshiPenaltyAmount = req.body.satoshiPenaltyAmount;
 
-      user.save(function (err){
-        if(err){ return next(err); }
+        user.myBitcoinAddress = testBitcoinInfo.address;
+        user.bitcoinPrivateKey = testBitcoinInfo.privateKeyHex;
 
-        return res.json({ token: user.generateJWT(), user: user })
+        user.setPassword(req.body.password)
+
+        user.save(function (err){
+          if(err){ return next(err); }
+
+          return res.json({ token: user.generateJWT(), user: user })
+        });
+
       });
 
     }

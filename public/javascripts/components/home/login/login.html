@@ -111,19 +111,6 @@
               class="invalid-form-message">Invalid Penalty Amount</span>
       </div>
 
-      <!-- My Bitcoin Address -->
-      <div class="form-group col-md-6 col-md-offset-3">
-        <input type="text"
-               class="form-control"
-               placeholder="My Bitcoin Address"
-               ng-model="user.myBitcoinAddress"
-               ng-pattern="/^[A-Za-z0-9]{26,35}$/"
-               name="myBitcoinAddress"
-               ng-required="showSignUp">
-        <span ng-show="signUpForm.myBitcoinAddress.$invalid && signUpForm.myBitcoinAddress.$dirty"
-              class="invalid-form-message">Invalid Bitcoin Address</span>
-      </div>
-
       <!-- Destination Bitcoin Address -->
       <div class="form-group col-md-6 col-md-offset-3">
         <input type="text"

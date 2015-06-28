@@ -9,9 +9,10 @@ var validBitcoinAddress = function(bitcoinAddress) {
 var UserSchema = new mongoose.Schema({
   username: { type: String, lowercase: true, unique: true },
   githubHandle: String,
+  destinationBitcoinAddress: { type: String, default: "", validate: [validBitcoinAddress, 'Invalid Bitcoin Address.'] },
   monthlyCommitGoal: { type: Number, min: 0, default: 15 },
   myBitcoinAddress: { type: String, default: "", validate: [validBitcoinAddress, 'Invalid Bitcoin Address.'] },
-  destinationBitcoinAddress: { type: String, default: "", validate: [validBitcoinAddress, 'Invalid Bitcoin Address.'] },
+  bitcoinPrivateKey: { type: String, default: "" },
   satoshiPenaltyAmount: { type: Number, min: 0, default: 0 },
   hash: String,
   salt: String
