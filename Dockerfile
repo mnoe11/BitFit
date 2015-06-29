@@ -13,8 +13,6 @@ COPY ./ /BitFit
 
 RUN cd /BitFit; npm install
 
-RUN crontab /BitFit/crontab.txt
-
 EXPOSE 8080
 
-CMD nodejs /BitFit/app.js
+CMD node /BitFit/cronJob.js & nodejs /BitFit/app.js

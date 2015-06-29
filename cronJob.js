@@ -18,64 +18,72 @@ var getPreviousMonth = function(month) {
   }
 };
 
-User.find({}, function(err, users) {
+var CronJob = require('cron').CronJob;
 
-  users.forEach(function(user) {
-    if (user.githubHandle) {
-      unirest.get('https://api.github.com/users/' + user.githubHandle + '/events')
-             .header('User-Agent', 'BitFit cronjob')
-             .end(function (response) {
+var job = new CronJob('0 0 1 * * *', function() {
+  console.log('You will see this message every second');
 
-               if (response.body == null) { return; }
+  User.find({}, function(err, users) {
 
-               var numCommitLastMonth = response.body.filter(function (commit) {
+    users.forEach(function(user) {
+      if (user.githubHandle) {
+        unirest.get('https://api.github.com/users/' + user.githubHandle + '/events')
+               .header('User-Agent', 'BitFit cronjob')
+               .end(function (response) {
 
-                 var previousMonth = getPreviousMonth(new Date().getMonth());
-                 var commitMonth = new Date(commit.created_at).getMonth();
-                 return commit.type == "PushEvent" && previousMonth == commitMonth;
+                 if (response.body == null) { return; }
 
-               }).length;
+                 var numCommitLastMonth = response.body.filter(function (commit) {
 
-               if (numCommitLastMonth < user.monthlyCommitGoal) {
+                   var previousMonth = getPreviousMonth(new Date().getMonth());
+                   var commitMonth = new Date(commit.created_at).getMonth();
+                   return commit.type == "PushEvent" && previousMonth == commitMonth;
 
-                 console.log(user.myBitcoinAddress);
-                 console.log("A");
-                 console.log(user.destinationBitcoinAddress);
-                var newtx = {
-                   inputs: [{ addresses: [ user.myBitcoinAddress ] }],
-                   outputs: [{addresses: [user.destinationBitcoinAddress], value: user.satoshiPenaltyAmount}]
-                };
+                 }).length;
 
-                unirest.post('https://api.blockcypher.com/v1/bcy/test/txs/new')
-                       .type('json')
-                       .send(newtx)
-                       .end(function(tmptx) {
-                         tmptx = tmptx.body;
+                 if (numCommitLastMonth < user.monthlyCommitGoal) {
 
-                         var key = new bitcoin.ECKey(bigi.fromHex(user.myBitcoinPrivateKeyHex), true);
+                  var newtx = {
+                     inputs: [{ addresses: [ user.myBitcoinAddress ] }],
+                     outputs: [{addresses: [user.destinationBitcoinAddress], value: user.satoshiPenaltyAmount}]
+                  };
 
-                         // signing each of the hex-encoded string required to finalize the transaction
-                         tmptx.pubkeys = [];
-                         tmptx.signatures = tmptx.tosign.map(function(tosign, n) {
-                           tmptx.pubkeys.push(key.pub.toHex());
-                           return key.sign(new buffer.Buffer(tosign, "hex")).toDER().toString("hex");
+                  unirest.post('https://api.blockcypher.com/v1/bcy/test/txs/new')
+                         .type('json')
+                         .send(newtx)
+                         .end(function(tmptx) {
+                           tmptx = tmptx.body;
+
+                           var key = new bitcoin.ECKey(bigi.fromHex(user.myBitcoinPrivateKeyHex), true);
+
+                           // signing each of the hex-encoded string required to finalize the transaction
+                           tmptx.pubkeys = [];
+
+                           if (tmptx.tosign) {
+                             tmptx.signatures = tmptx.tosign.map(function(tosign, n) {
+                               tmptx.pubkeys.push(key.pub.toHex());
+                               return key.sign(new buffer.Buffer(tosign, "hex")).toDER().toString("hex");
+                             });
+                             // sending back the transaction with all the signatures to broadcast
+                             unirest.post('https://api.blockcypher.com/v1/bcy/test/txs/send')
+                              .type('json')
+                              .send(tmptx)
+                              .end(function(finaltx) {
+                               user.totalPaidOut = user.totalPaidOut + user.satoshiPenaltyAmount;
+                               user.save();
+                               console.log("Charged user " + user.username + " " + user.satoshiPenaltyAmount);
+                             });
+                           }
+
                          });
-                         // sending back the transaction with all the signatures to broadcast
-                         unirest.post('https://api.blockcypher.com/v1/bcy/test/txs/send')
-                          .type('json')
-                          .send(tmptx)
-                          .end(function(finaltx) {
-                           user.totalPaidOut = user.totalPaidOut + user.satoshiPenaltyAmount;
-                           user.save();
-                           console.log("Charged user " + user.username + " " + user.satoshiPenaltyAmount);
-                         })
-                       });
 
-               }
+                 }
 
-             });
-    }
+               });
+      }
+
+    });
 
   });
 
-});
+}, null, true, 'America/Los_Angeles');
