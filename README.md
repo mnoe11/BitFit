@@ -3,4 +3,4 @@ BitFit -- A Fitbit for code. Tracks your git commits and shows them on a page. Y
 
 # How To Run
 
-1) docker: docker run --env JWT_SECRET='<your_secret_key>' --env MONGO_HOST='<your_mongo_ip>' -p 49160:8080 -d mnoe11/bit-fit
+1) docker: docker run --env JWT_SECRET='your_secret_key' --env MONGO_HOST='your_mongo_ip' -p 49160:8080 -d mnoe11/bit-fit
