@@ -18,7 +18,7 @@ app.controller('homeCtrl', [
 
     $scope.saveChanges = function() {
       authService.saveUserChanges($scope.user).then(function(results) {
-        console.log(results);
+        $scope.displayGithubFeed = true;
       })
     }
 

@@ -33,19 +33,20 @@ router.post('/register', function(req, res, next){
       var user = new User();
 
       // Generates a Test Bitcoin Address for the new User
-      // using the helloblock api
-      unirest.get('https://testnet.helloblock.io/v1/faucet?type=1')
+      // using the blockcypher api
+      unirest.post('https://api.blockcypher.com/v1/bcy/test/addrs')
       .end(function(testBitcoinResponse) {
-        var testBitcoinInfo = testBitcoinResponse.body.data;
 
         user.username = req.body.username;
         user.githubHandle = req.body.githubHandle;
-        user.monthlyCommitGoal = req.body.monthlyCommitGaol;
+        user.monthlyCommitGoal = req.body.monthlyCommitGoal;
         user.destinationBitcoinAddress = req.body.destinationBitcoinAddress;
         user.satoshiPenaltyAmount = req.body.satoshiPenaltyAmount;
 
-        user.myBitcoinAddress = testBitcoinInfo.address;
-        user.bitcoinPrivateKey = testBitcoinInfo.privateKeyHex;
+        user.myBitcoinAddress = testBitcoinResponse.body.address;
+        user.myBitcoinPrivateKeyHex = testBitcoinResponse.body.private;
+        user.myBitcoinPrivateKeyWif = testBitcoinResponse.body.wif;
+        user.myBitcoinPublicKey = testBitcoinResponse.body.public;
 
         user.setPassword(req.body.password)
 

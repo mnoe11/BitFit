@@ -12,8 +12,11 @@ var UserSchema = new mongoose.Schema({
   destinationBitcoinAddress: { type: String, default: "", validate: [validBitcoinAddress, 'Invalid Bitcoin Address.'] },
   monthlyCommitGoal: { type: Number, min: 0, default: 15 },
   myBitcoinAddress: { type: String, default: "", validate: [validBitcoinAddress, 'Invalid Bitcoin Address.'] },
-  bitcoinPrivateKey: { type: String, default: "" },
-  satoshiPenaltyAmount: { type: Number, min: 0, default: 0 },
+  myBitcoinPrivateKeyHex: { type: String, default: "" },
+  myBitcoinPrivateKeyWif: { type: String, default: "" },
+  myBitcoinPublicKey: { type: String, default: "" },
+  satoshiPenaltyAmount: { type: Number, min: 5400, default: 0 },
+  totalPaidOut: { type: Number, min: 0, default: 0 },
   hash: String,
   salt: String
 });

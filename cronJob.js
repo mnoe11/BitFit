@@ -1,19 +1,13 @@
 var unirest = require('unirest');
 var mongoose = require( 'mongoose' );
 require('./models/Users');
-mongoose.connect('mongodb://localhost/bit-fit');
+mongoose.connect('mongodb://52.24.144.229/bit-fit');
 
 var User = mongoose.model('User');
-var Chain = require('chain-node');
-var chain = new Chain({
-  keyId: '9d35e52837214172f097b6f5cacc8de5',
-  keySecret: '54e377a4b11db3adb915f6f379d2b9cb',
-  blockChain: 'testnet3'
-});
 
-var BlockIo = require('block_io');
-var version = 2;
-var block_io = new BlockIo('6881-3654-9813-36af', 'MesQueBarcelona1', version);
+var bitcoin = require("bitcoinjs-lib");
+var bigi    = require("bigi");
+var buffer  = require('buffer');
 
 var getPreviousMonth = function(month) {
   if (month = 1) {
@@ -28,9 +22,11 @@ User.find({}, function(err, users) {
 
   users.forEach(function(user) {
     if (user.githubHandle) {
-      unirest.get('https://api.github.com/users/' + user.githubHandle + '/events')
+      unirest.get('https://mnoe11:0364a83e5a7c522adb20f44543e4543c8f354050@api.github.com/users/' + user.githubHandle + '/events')
              .header('User-Agent', 'BitFit cronjob')
              .end(function (response) {
+
+               if (response.body == null) { return; }
 
                var numCommitLastMonth = response.body.filter(function (commit) {
 
@@ -40,13 +36,43 @@ User.find({}, function(err, users) {
 
                }).length;
 
-               // ALL THAT IS LEFT IS TO IMPLEMENT BITCOIN PART AND CRONJOB
                if (numCommitLastMonth < user.monthlyCommitGoal) {
-                 block_io.get_new_address({}, console.log);
+
+                 console.log(user.myBitcoinAddress);
+                 console.log("A");
+                 console.log(user.destinationBitcoinAddress);
+                var newtx = {
+                   inputs: [{ addresses: [ user.myBitcoinAddress ] }],
+                   outputs: [{addresses: [user.destinationBitcoinAddress], value: user.satoshiPenaltyAmount}]
+                };
+
+                unirest.post('https://api.blockcypher.com/v1/bcy/test/txs/new')
+                       .type('json')
+                       .send(newtx)
+                       .end(function(tmptx) {
+                         tmptx = tmptx.body;
+
+                         var key = new bitcoin.ECKey(bigi.fromHex(user.myBitcoinPrivateKeyHex), true);
+
+                         // signing each of the hex-encoded string required to finalize the transaction
+                         tmptx.pubkeys = [];
+                         tmptx.signatures = tmptx.tosign.map(function(tosign, n) {
+                           tmptx.pubkeys.push(key.pub.toHex());
+                           return key.sign(new buffer.Buffer(tosign, "hex")).toDER().toString("hex");
+                         });
+                         // sending back the transaction with all the signatures to broadcast
+                         unirest.post('https://api.blockcypher.com/v1/bcy/test/txs/send')
+                          .type('json')
+                          .send(tmptx)
+                          .end(function(finaltx) {
+                           user.totalPaidOut = user.totalPaidOut + user.satoshiPenaltyAmount;
+                           user.save();
+                           console.log("Charged user " + user.username + " " + user.satoshiPenaltyAmount);
+                         })
+                       });
 
                }
 
-               console.log(numCommitLastMonth + ":" + user.monthlyCommitGoal);
              });
     }
 
