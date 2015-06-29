@@ -21,13 +21,12 @@ var getPreviousMonth = function(month) {
 var CronJob = require('cron').CronJob;
 
 var job = new CronJob('0 0 1 * * *', function() {
-  console.log('You will see this message every second');
 
   User.find({}, function(err, users) {
 
     users.forEach(function(user) {
       if (user.githubHandle) {
-        unirest.get('https://api.github.com/users/' + user.githubHandle + '/events')
+        unirest.get('https://api.github.com/users/' + user.githubHandle + '/events?per_page=100')
                .header('User-Agent', 'BitFit cronjob')
                .end(function (response) {
 

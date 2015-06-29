@@ -13,7 +13,7 @@ app.factory('githubService', [
     githubFactory.getCurrentUserRecentActivity = function(githubHandle){
       var deferred = $q.defer();
       var getEndpoint = githubEndpoint + 'users/'
-                        + githubHandle + '/events';
+                        + githubHandle + '/events?per_page=100';
       $http.get(getEndpoint)
            .success(function(resp) {
              deferred.resolve(resp);
