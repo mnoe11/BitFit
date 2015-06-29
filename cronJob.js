@@ -1,7 +1,7 @@
 var unirest = require('unirest');
 var mongoose = require( 'mongoose' );
 require('./models/Users');
-mongoose.connect('mongodb://52.24.144.229/bit-fit');
+mongoose.connect('mongodb://' + process.env.MONGO_HOST + '/bit-fit');
 
 var User = mongoose.model('User');
 
@@ -22,7 +22,7 @@ User.find({}, function(err, users) {
 
   users.forEach(function(user) {
     if (user.githubHandle) {
-      unirest.get('https://mnoe11:0364a83e5a7c522adb20f44543e4543c8f354050@api.github.com/users/' + user.githubHandle + '/events')
+      unirest.get('https://api.github.com/users/' + user.githubHandle + '/events')
              .header('User-Agent', 'BitFit cronjob')
              .end(function (response) {
 
